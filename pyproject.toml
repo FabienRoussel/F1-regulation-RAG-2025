@@ -1,0 +1,16 @@
+[project]
+name = "rag-f1"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas>=2.3.1",
+    "pypdf2>=3.0.1",
+    "pypdf>=5.9.0",
+    "pymupdf>=1.26.3",
+    "ipykernel>=6.30.0",
+    "langchain-community>=0.3.27",
+    "langchain>=0.3.27",
+    "pyproject-toml>=0.1.0",
+]
