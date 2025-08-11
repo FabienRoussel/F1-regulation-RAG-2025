@@ -26,4 +26,4 @@ def extract_pdf_text_to_dataframe(pdf_path: str) -> pd.DataFrame:
 
     except Exception as e:
         raise RuntimeError(f"Error processing PDF file: {e}")
-    
+
