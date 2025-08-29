@@ -33,27 +33,43 @@ cp .env.example .env
 # Edit .env if needed (default Docker config works out of the box)
 ```
 
-### 3. Start PostgreSQL Server
+### 3. Create and Start PostgreSQL Server
 
 ```bash
-# Start the database server
-./start_database.sh start
+# Create the database server
+docker-compose up postgres --detach
 
 # Check status
-./start_database.sh status
+docker ps
 ```
 
-The script will:
-- Start PostgreSQL with pgvector extension
-- Initialize the database schema
-- Start Adminer web interface at http://localhost:8080
+And then make sure your database is up to date by executing database migrations
+```bash 
+alembic upgrade head
+```
+
+### 3.1 I want to connect to the database
+
+Get the id of by executing
+```bash
+docker ps
+```
+
+And then connect to the database in the container. You will find the username and port in the docker-compose.yml
+```bash
+docker exec -it [ID] bash
+psql -U [username] -p [PORT]
+```
+
+In the sql terminal you can write and visualise if the table regulation is already here :
+```psql
+\c mydb
+\d+ regulations
+```
 
 ### 4. Process F1 Regulations
 
 ```bash
-# Set up database tables and process PDFs
-python setup_database.py
-
 # Run the main processing pipeline
 python main.py
 ```
