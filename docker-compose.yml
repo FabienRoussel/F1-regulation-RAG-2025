@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: mydb
+
+    volumes:
+      - postgres5-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  ollama:
+    image: ollama/ollama
+    ports:
+      - 11434:11434
+    volumes:
+      - ./ollama:/root/.ollama
+
+  ollama-webui:
+    image: ghcr.io/ollama-webui/ollama-webui:main
+    container_name: ollama-webui
+    ports: ["3000:8080"]
+    volumes:
+      - ollama-webui:/app/backend/data
+    depends_on:
+      - ollama
+    environment:
+      - 'OLLAMA_API_BASE_URL=http://ollama:11434/api'
+    restart: unless-stopped
+
+volumes:
+  postgres5-data:
+  ollama:
+  ollama-webui:

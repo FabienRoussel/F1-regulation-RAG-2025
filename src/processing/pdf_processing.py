@@ -6,8 +6,7 @@ from src.utils.utils import remove_footer
 from sentence_transformers import SentenceTransformer
 
 
-
-class PDFProcessor():
+class PDFProcessor:
     """
     PDF processor following hexagonal architecture principles.
     Handles PDF text extraction, section processing, and embedding generation.
