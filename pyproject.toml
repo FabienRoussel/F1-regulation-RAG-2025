@@ -16,4 +16,8 @@ dependencies = [
     "transformers>=4.55.0",
     "sentence-transformers>=5.1.0",
     "ipywidgets>=8.1.7",
+    "psycopg2-binary>=2.9.9",
+    "pgvector>=0.3.3",
+    "sqlalchemy>=2.0.0",
+    "python-dotenv>=1.0.0",
 ]
