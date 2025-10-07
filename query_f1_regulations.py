@@ -18,9 +18,13 @@ def main():
     print("F1 Regulations Query System")
     print("=" * 60)
 
-    ollama = OllamaModel(base_url="http://localhost:11434", model_name="hf.co/PleIAs/Pleias-RAG-1B-gguf")
+    ollama = OllamaModel(base_url="http://localhost:11434", model_name="gemma3:4b")
     print("\nStep 1: Pulling Ollama model...")
-    ollama.pull_model()
+
+    if not ollama.is_model_available():
+        ollama.pull_model()
+    else:
+        print("Model already available, skipping download.")
 
     # Ask user for a question
     print("\n" + "=" * 60)

@@ -77,18 +77,20 @@ class OllamaModel:
             "model": model,
             "prompt": prompt,
             "max_tokens": max_tokens,
+            "options": {
+                "temperature": 0
+            },
             "stream": False  # Set to True if you want streaming responses
         }
 
         try:
             response = requests.post(url, json=payload)
-            response.raise_for_status()
             data = response.json()
 
-            if "text" in data:
-                return data["text"].strip()
+            if "response" in data:
+                return data["response"].strip()
             else:
-                raise ValueError("No text found in the response.")
+                raise ValueError("No response found in the response.")
 
         except requests.exceptions.ConnectionError:
             raise ConnectionError(f"Could not connect to Ollama at {self.base_url}. Make sure Ollama is running.")
@@ -96,5 +98,37 @@ class OllamaModel:
             raise RuntimeError(f"Error generating text: {e}")
         except json.JSONDecodeError:
             raise ValueError("Error decoding JSON response from Ollama.")
+        
+    def is_model_available(self, model_name: str | None = None) -> bool:
+        """
+        Check if a model is available locally in Ollama.
+
+        Args:
+            model_name: Name of the model to check (default: uses instance model_name)
+        Returns:
+            True if the model is available, False otherwise.
+        model = model_name or self.model_name
+        """     
+
+        model = model_name or self.model_name
+        url = f"{self.base_url}/api/models"
+
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            data = response.json()
+
+            available_models = [m["name"] for m in data.get("models", [])]
+            return model in available_models
+
+        except requests.exceptions.ConnectionError:
+            print(f"Could not connect to Ollama at {self.base_url}. Make sure Ollama is running.")
+            return False
+        except requests.exceptions.RequestException as e:
+            print(f"Error checking models: {e}")
+            return False
+        except json.JSONDecodeError:
+            print("Error decoding JSON response from Ollama.")
+            return False
     
     
