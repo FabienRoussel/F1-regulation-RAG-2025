@@ -1,22 +1,21 @@
-import sys
 import os
 import pandas as pd
 import logging
 
 from langchain_postgres import PGVector
+
+from config import DATA_DIRECTORY
 from src.processing.pdf_processing import PDFProcessor
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
-
 
 def main():
     pdf_filename = 'FIA 2025 Formula 1 Sporting Regulations - Issue 5 - 2025-04-30.pdf'
-    pdf_path = os.path.join(os.path.dirname(__file__), 'data', 'pdfs', pdf_filename)
-    processed_data_dir = os.path.join(os.path.dirname(__file__), 'data', 'processed')
+    pdf_path = DATA_DIRECTORY / 'pdfs' / pdf_filename
+    processed_data_dir = DATA_DIRECTORY / 'processed'
 
     logger.info("Starting F1 Regulation RAG processing")
 
@@ -25,15 +24,15 @@ def main():
     # Process PDF and extract text
     logger.info(f"Processing PDF: {pdf_filename}")
     df = processor.extract_pdf_text_to_dataframe(pdf_path)
-    df.to_csv(os.path.join(processed_data_dir, 'pdf_text.csv'), index=False)
+    df.to_csv(processed_data_dir / 'pdf_text.csv', index=False)
     logger.info(f"Extracted text from {len(df)} pages")
 
     # Extract sections
     logger.info("Extracting regulation sections...")
     df_sections = processor.extract_sections_to_dataframe('\n'.join(df['Text']))
     df_appendices = processor.extract_appendices_to_dataframe('\n'.join(df['Text']))
-    df_sections.to_csv(os.path.join(processed_data_dir, 'pdf_sections.csv'), index=False)
-    df_appendices.to_csv(os.path.join(processed_data_dir, 'pdf_appendices.csv'), index=False)
+    df_sections.to_csv(processed_data_dir / 'pdf_sections.csv', index=False)
+    df_appendices.to_csv(processed_data_dir / 'pdf_appendices.csv', index=False)
     df_chunks = pd.concat([df_sections, df_appendices], ignore_index=True)
     logger.info(f"Extracted {len(df_sections)} regulation sections")
 

@@ -1,5 +1,6 @@
 import re
 
+
 def remove_footer(text: str) -> str:
     """
     Removes the footer from the given text.

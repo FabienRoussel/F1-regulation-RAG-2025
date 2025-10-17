@@ -220,3 +220,22 @@ Automatically created indexes for fast similarity search:
 ## License
 
 This project is for educational and research purposes.
+
+## Prochaines étapes / To do list
+- On aimerait créer un chatbot avec qui on pourrait discuter des régulations de la F1 en utilisant ce système RAG.
+- On souhaite faire l'évaluation des performances du système avec notre jeu de données.
+- Comment on a réussi un texte légal en chatbot compréhensible pour les plus initiés ?
+
+Etats des lieux du rag après deux ans : 
+- Comment a evolué le rag en deux ans ? Quelles contraintes n'existent plus ? 
+- Faire une expérience : recherche mot-clé vs recherche chunks ?
+
+Sur les parties manquantes : 
+- Evaluation et choix des métriques d'évaluations (Opik/Comet-ml)
+- Création d'un chat avec du contexte
+- Tester avec d'autres modèles d'embeddings
+- Tester avec un autre type de base de données type neo4j
+- Clean Code et package de l'app/ portage cloud
+
+Nice to have : 
+- Ingestion multiples de documents

@@ -1,12 +1,9 @@
-import sys
-import os
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_postgres import PGVector
 from langchain.retrievers import ContextualCompressionRetriever
 from langchain.retrievers.document_compressors import CrossEncoderReranker
 from langchain_community.cross_encoders import HuggingFaceCrossEncoder
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
 from generation.models.ollama_model import OllamaModel
 
 
