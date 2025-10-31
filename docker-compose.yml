@@ -12,26 +12,6 @@ services:
     ports:
       - 54320:5432
 
-  ollama:
-    image: ollama/ollama
-    ports:
-      - 11434:11434
-    volumes:
-      - ./ollama:/root/.ollama
-
-  ollama-webui:
-    image: ghcr.io/ollama-webui/ollama-webui:main
-    container_name: ollama-webui
-    ports: ["3000:8080"]
-    volumes:
-      - ollama-webui:/app/backend/data
-    depends_on:
-      - ollama
-    environment:
-      - 'OLLAMA_API_BASE_URL=http://ollama:11434/api'
-    restart: unless-stopped
-
 volumes:
   postgres5-data:
-  ollama:
-  ollama-webui:
+

@@ -1,127 +1,99 @@
 import sys
 import os
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_postgres import PGVector
-from langchain.retrievers import ContextualCompressionRetriever
-from langchain.retrievers.document_compressors import CrossEncoderReranker
-from langchain_community.cross_encoders import HuggingFaceCrossEncoder
+# typing.Optional not used
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
-from generation.models.ollama_model import OllamaModel
+
+from generation.retriever.tools import document_retriever_F1
+from langchain.chat_models import ChatOllama
+from langchain.schema import HumanMessage
+
+
+def build_prompt_from_docs(docs, question: str) -> str:
+    """Create a single prompt by concatenating retrieved docs and the question."""
+    context = "\n\n".join([getattr(d, 'page_content', str(d)) for d in docs])
+    prompt = f"""Based on the following F1 regulation context, answer the question.
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:"""
+    return prompt
+
+
+def conversational_cli(
+    retriever,
+    chat_model_name: str = "gemma3:4b",
+    base_url: str = "http://localhost:11434",
+):
+    """Start a conversational CLI loop using only LangChain's ChatOllama model.
+
+    This function will exit with an explanatory message if ChatOllama cannot be
+    instantiated (so the user must install the LangChain Ollama integration).
+    """
+    print("=" * 60)
+    print("F1 Regulations Conversational Agent (type 'exit' to quit)")
+    print("Commands: 'help', 'exit'\n")
+
+    # Instantiate ChatOllama; if this fails we must abort (user requested no OllamaModel fallback)
+    try:
+        chat_model = ChatOllama(model=chat_model_name, base_url=base_url)
+        print(f"Using ChatOllama model: {chat_model_name} at {base_url}")
+    except Exception as e:
+        print("Could not initialize ChatOllama. Ensure langchain and the ollama integration are installed and Ollama is running.")
+        print(f"Error: {e}")
+        return
+
+    while True:
+        user_input = input("\nYou: ").strip()
+        if not user_input:
+            continue
+        if user_input.lower() in ("exit", "quit"):
+            print("Goodbye!")
+            break
+        if user_input.lower() == "help":
+            print("Enter a question about F1 regulations. Type 'exit' to quit.")
+            continue
+
+        # Retrieve documents for the user query
+        print("\nRetrieving relevant documents...")
+        docs = retriever.get_relevant_documents(user_input)
+        print(f"Found {len(docs)} documents (showing snippets):")
+        for i, d in enumerate(docs[:3], 1):
+            snippet = getattr(d, 'page_content', '')[:300]
+            meta = getattr(d, 'metadata', {})
+            print(f"\n[{i}] {snippet}...\n   metadata={meta}")
+
+        prompt = build_prompt_from_docs(docs, user_input)
+
+        print("\nGenerating answer with ChatOllama...")
+        try:
+            # Use predict_messages for a single user message and get a BaseMessage response
+            resp = chat_model.predict_messages([HumanMessage(content=prompt)])
+            answer = getattr(resp, 'content', str(resp))
+        except Exception as e:
+            answer = f"ChatOllama generation failed: {e}"
+
+        print("\n" + "=" * 60)
+        print("Agent:\n")
+        print(answer)
+        print("\n" + "=" * 60)
 
 
 def main():
-    """Main function to query F1 regulations."""
-
-    # Initialize and pull Ollama model
     print("=" * 60)
-    print("F1 Regulations Query System")
+    print("F1 Regulations Conversational RAG")
     print("=" * 60)
 
-    ollama = OllamaModel(base_url="http://localhost:11434", model_name="gemma3:4b")
-    print("\nStep 1: Pulling Ollama model...")
+    # Create the document retriever using the factory
+    retriever = document_retriever_F1()
 
-    if not ollama.is_model_available():
-        ollama.pull_model()
-    else:
-        print("Model already available, skipping download.")
-
-    # Ask user for a question
-    print("\n" + "=" * 60)
-    print("Step 2: Enter your question about F1 regulations")
-    print("=" * 60)
-    question = input("\nYour question: ").strip()
-
-    if not question:
-        print("No question provided. Exiting.")
-        return
-
-    print(f"\nReceived question: {question}")
-
-    # Initialize embedding model
-    print("\n" + "=" * 60)
-    print("Step 3: Embedding your question with PgVector")
-    print("=" * 60)
-
-    embedding_model = HuggingFaceEmbeddings(
-        model_name="Qwen/Qwen3-Embedding-0.6B",
-        model_kwargs={'device': 'mps'}
-    )
-
-    # Connect to PgVector database
-    connection = "postgresql+psycopg://postgres:example@localhost:54320/mydb"
-    collection_name = "F1_Regulations"
-
-    print(f"\nConnecting to database: {connection}")
-    print(f"Collection name: {collection_name}")
-
-    # Initialize PgVector store and retriever
-    vectorstore = PGVector(
-        embeddings=embedding_model,
-        collection_name=collection_name,
-        connection=connection,
-        use_jsonb=True,
-    )
-
-    # Create base retriever
-    print("\n" + "=" * 60)
-    print("Step 4: Creating retriever with reranker")
-    print("=" * 60)
-
-    retriever = vectorstore.as_retriever(
-        search_type="similarity",
-        search_kwargs={"k": 10}  # Retrieve more docs for reranking
-    )
-
-    # Initialize cross-encoder reranker
-    print("\nInitializing cross-encoder reranker...")
-    cross_encoder = HuggingFaceCrossEncoder(model_name="cross-encoder/ms-marco-MiniLM-L-6-v2")
-    compressor = CrossEncoderReranker(model=cross_encoder, top_n=3)
-
-    # Create compression retriever with reranker
-    compression_retriever = ContextualCompressionRetriever(
-        base_compressor=compressor,
-        base_retriever=retriever
-    )
-
-    # Query the retriever
-    print("\n" + "=" * 60)
-    print("Step 5: Retrieving relevant documents")
-    print("=" * 60)
-
-    print(f"\nSearching for documents related to: {question}")
-    docs = compression_retriever.invoke(question)
-
-    print(f"\nFound {len(docs)} relevant documents after reranking:")
-    for i, doc in enumerate(docs, 1):
-        print(f"\n--- Document {i} ---")
-        print(f"Content preview: {doc.page_content[:200]}...")
-        if hasattr(doc, 'metadata'):
-            print(f"Metadata: {doc.metadata}")
-
-    # Generate answer using Ollama
-    print("\n" + "=" * 60)
-    print("Step 6: Generating answer with Ollama")
-    print("=" * 60)
-
-    context = "\n\n".join([doc.page_content for doc in docs])
-    prompt = f"""Based on the following F1 regulation context, answer the question.
-
-    Context:
-    {context}
-
-    Question: {question}
-
-    Answer:"""
-
-    print("\nGenerating answer...")
-    answer = ollama.generate(prompt)
-
-    print("\n" + "=" * 60)
-    print("Answer:")
-    print("=" * 60)
-    print(f"\n{answer}\n")
+    # Start conversational CLI using ChatOllama only
+    conversational_cli(retriever=retriever, chat_model_name="gemma3:4b", base_url="http://localhost:11434")
 
 
 if __name__ == "__main__":
     main()
+

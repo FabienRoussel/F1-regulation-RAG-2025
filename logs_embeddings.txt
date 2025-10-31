@@ -1,0 +1,38 @@
+2025-10-07 09:53:05,678 - __main__ - INFO - Extracted 65 regulation sections
+2025-10-07 09:53:05,678 - __main__ - INFO - Generating and storing embeddings for sections...
+2025-10-07 09:53:05,679 - __main__ - INFO - Created 74 Document objects
+2025-10-07 09:53:10,207 - __main__ - INFO - Processed batch 1/15
+2025-10-07 09:53:16,169 - __main__ - INFO - Processed batch 2/15
+2025-10-07 09:53:37,454 - __main__ - ERROR - Error processing batch 3: MPS backend out of memory (MPS allocated: 9.00 GiB, other allocations: 10.69 GiB, max allowed: 27.20 GiB). Tried to allocate 10.69 GiB on private pool. Use PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0 to disable upper limit for memory allocations (may cause system failure).
+2025-10-07 09:53:47,767 - __main__ - INFO - Processed document 11/74
+2025-10-07 09:53:48,086 - __main__ - INFO - Processed document 12/74
+2025-10-07 09:53:48,308 - __main__ - INFO - Processed document 13/74
+2025-10-07 09:53:48,537 - __main__ - INFO - Processed document 14/74
+2025-10-07 09:53:48,891 - __main__ - INFO - Processed document 15/74
+2025-10-07 09:53:59,759 - __main__ - INFO - Processed batch 4/15
+2025-10-07 09:54:04,773 - __main__ - INFO - Processed batch 5/15
+2025-10-07 09:54:14,804 - __main__ - INFO - Processed batch 6/15
+2025-10-07 09:55:21,195 - __main__ - ERROR - Error processing batch 7: MPS backend out of memory (MPS allocated: 11.30 GiB, other allocations: 8.12 GiB, max allowed: 27.20 GiB). Tried to allocate 8.09 GiB on private pool. Use PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0 to disable upper limit for memory allocations (may cause system failure).
+2025-10-07 09:55:33,136 - __main__ - INFO - Processed document 31/74
+2025-10-07 09:55:33,843 - __main__ - INFO - Processed document 32/74
+2025-10-07 09:55:34,368 - __main__ - INFO - Processed document 33/74
+2025-10-07 09:55:34,578 - __main__ - INFO - Processed document 34/74
+2025-10-07 09:55:36,188 - __main__ - INFO - Processed document 35/74
+2025-10-07 09:55:43,285 - __main__ - INFO - Processed batch 8/15
+2025-10-07 09:55:58,449 - __main__ - INFO - Processed batch 9/15
+2025-10-07 09:56:02,714 - __main__ - INFO - Processed batch 10/15
+2025-10-07 09:56:09,018 - __main__ - INFO - Processed batch 11/15
+2025-10-07 09:56:30,570 - __main__ - INFO - Processed batch 12/15
+2025-10-07 09:56:34,539 - __main__ - INFO - Processed batch 13/15
+2025-10-07 09:56:34,682 - __main__ - ERROR - Error processing batch 14: Invalid buffer size: 18.19 GiB
+2025-10-07 09:56:37,795 - __main__ - INFO - Processed document 66/74
+2025-10-07 09:57:00,295 - __main__ - INFO - Processed document 67/74
+2025-10-07 09:57:00,843 - __main__ - INFO - Processed document 68/74
+2025-10-07 09:57:01,039 - __main__ - INFO - Processed document 69/74
+2025-10-07 09:57:02,359 - __main__ - INFO - Processed document 70/74
+2025-10-07 09:57:03,330 - __main__ - ERROR - Error processing batch 15: Invalid buffer size: 21.47 GiB
+2025-10-07 09:57:12,541 - __main__ - INFO - Processed document 71/74
+2025-10-07 09:58:02,790 - __main__ - INFO - Processed document 72/74
+2025-10-07 09:58:18,711 - __main__ - INFO - Processed document 73/74
+2025-10-07 09:58:19,156 - __main__ - INFO - Processed document 74/74
+2025-10-07 09:58:19,156 - __main__ - INFO - Stored 74 documents in the vector store 'F1_Regulations'
