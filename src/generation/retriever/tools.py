@@ -9,8 +9,8 @@ from typing import Optional
 
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_postgres import PGVector
-from langchain.retrievers import ContextualCompressionRetriever
-from langchain.retrievers.document_compressors import CrossEncoderReranker
+from langchain_classic.retrievers import ContextualCompressionRetriever
+from langchain_classic.retrievers.document_compressors import CrossEncoderReranker
 from langchain_community.cross_encoders import HuggingFaceCrossEncoder
 
 
@@ -47,6 +47,7 @@ class DocumentRetrieverF1:
         self.base_retriever = self.vectorstore.as_retriever(
             search_type="similarity",
             search_kwargs={"k": 5},
+            filter={'source':'title'}
         )
 
         # Cross-encoder reranker and compressor

@@ -5,9 +5,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
 
 from generation.retriever.tools import document_retriever_F1
-from langchain.chat_models import ChatOllama
-from langchain.schema import HumanMessage
-
+from langchain_ollama import ChatOllama
 
 def build_prompt_from_docs(docs, question: str) -> str:
     """Create a single prompt by concatenating retrieved docs and the question."""
@@ -70,8 +68,8 @@ def conversational_cli(
 
         print("\nGenerating answer with ChatOllama...")
         try:
-            # Use predict_messages for a single user message and get a BaseMessage response
-            resp = chat_model.predict_messages([HumanMessage(content=prompt)])
+            # Use invoke for a single user message and get a BaseMessage response
+            resp = chat_model.invoke(prompt)
             answer = getattr(resp, 'content', str(resp))
         except Exception as e:
             answer = f"ChatOllama generation failed: {e}"
